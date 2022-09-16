@@ -6,8 +6,17 @@ addEventListener("fetch", (event) => {
   );
 });
 
+function escape(unsafe) {
+  return unsafe
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
 async function handleRequest(request) {
-  const { searchParams } = new URL(request.url);
+  const { searchParams, href } = new URL(request.url);
 
   const targetUrl = new URL(searchParams.get("url"));
 
@@ -87,12 +96,14 @@ async function handleRequest(request) {
 <?xml version="1.0" encoding="UTF-8" ?>
 <rss xmlns:dc="http://purl.org/dc/elements/1.1/"
   xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  xmlns:atom="http://www.w3.org/2005/Atom"
   version="2.0">
 
   <channel>
     <title><![CDATA[${title}]]></title>
     <description><![CDATA[${description}]]></description>
     <link>${targetUrl}</link>
+    <atom:link href="${escape(href)}" rel="alternate" type="application/rss+xml" />
     <generator>vkrae-rss-generator</generator>
     <lastBuildDate>${lastBuildDate}</lastBuildDate>
     ${items
